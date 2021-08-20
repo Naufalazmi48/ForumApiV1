@@ -32,7 +32,7 @@ describe('ThreadRepositoryPostgres', () => {
           title: 'Laskar',
           body: 'blablabla',
           owner: 'user-123',
-          date: '27092000',
+          date: '27/09/2000',
         });
 
         const fakeIdGenerator = () => '123';

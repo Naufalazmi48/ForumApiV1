@@ -4,11 +4,7 @@ class DetailThread {
       id, title, body, date, username, comments,
     } = payload;
 
-    if (!id || !title || !body || !date || !username || !comments) {
-      throw new Error('DETAIL_THREAD.NOT_CONTAIN_NEEDED_PROPERTY');
-    }
-
-    if (!comments[0]) {
+    if (!id || !title || !body || !date || !username || !comments || !comments[0]) {
       throw new Error('DETAIL_THREAD.NOT_CONTAIN_NEEDED_PROPERTY');
     }
 

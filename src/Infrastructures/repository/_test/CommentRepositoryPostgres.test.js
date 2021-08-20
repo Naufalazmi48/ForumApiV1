@@ -35,7 +35,7 @@ describe('CommentRepositoryPostgres', () => {
           threadId: 'thread-123',
           content: 'Karyamu keren',
           owner: 'user-123',
-          date: '27092000',
+          date: '27/09/2000',
         });
 
         const fakeIdGenerator = () => '123';
@@ -99,6 +99,31 @@ describe('CommentRepositoryPostgres', () => {
 
         // Assert
         expect(commentOnThread[0]).toEqual(expectedComment);
+      });
+    });
+
+    describe('validateCommentIsAvailable function', () => {
+      it('should persist get comments correctly', async () => {
+        // Arrange
+        await UsersTableTestHelper.addUser({});
+        await ThreadsTableTestHelper.createThread({});
+        const date = new Date().toISOString();
+        await CommentTableTestHelper.addComment({ date });
+
+        const expectedComment = {
+          id: 'comment-123',
+          content: 'Keren bang',
+          username: 'dicoding',
+          date,
+        };
+
+        const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
+
+        // Action
+        const commentOnThread = await commentRepositoryPostgres.validateCommentIsAvailable('comment-123');
+
+        // Assert
+        expect(commentOnThread).toEqual(expectedComment);
       });
     });
   });

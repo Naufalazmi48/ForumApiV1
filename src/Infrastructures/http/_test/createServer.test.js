@@ -131,7 +131,9 @@ describe('HTTP server', () => {
       const accessToken = await ServerTestHelper.getAccessToken();
       await ThreadsTableTestHelper.createThread({});
       await CommentTableTestHelper.addComment({});
-      await ReplyTableTestHelper.addReply({});
+      await ReplyTableTestHelper.addReply({ date: '20/08/2021' });
+      await ReplyTableTestHelper.addReply({ date: '15/08/2021', id: 'reply-456', content: 'biasa aja' });
+      await ReplyTableTestHelper.addReply({ date: '28/08/2021', id: 'reply-678', content: 'mantappu jiwa' });
       const threadId = 'thread-123';
 
       const server = await createServer(Injection);
@@ -444,17 +446,18 @@ describe('HTTP server', () => {
       expect(responseJson.message).toEqual('Anda tidak berhak menghapus reply ini');
     });
 
-    it('should response 200 when request delete comment with valid body request', async () => {
+    it('should response 200 when request delete reply with valid body request', async () => {
       // Arrange
       const accessToken = await ServerTestHelper.getAccessToken();
       await ThreadsTableTestHelper.createThread({});
       await CommentTableTestHelper.addComment({});
+      await ReplyTableTestHelper.addReply({});
 
       const server = await createServer(Injection);
 
       // Action
       const response = await server.inject({
-        url: '/threads/thread-123/comments/comment-123',
+        url: '/threads/thread-123/comments/comment-123/replies/reply-123',
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${accessToken}`,

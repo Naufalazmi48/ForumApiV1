@@ -4,16 +4,12 @@ const DetailThread = require('../../../../Domains/threads/entities/DetailThread'
 class ThreadsHandler {
   constructor(injections) {
     const {
-      getCommentByThreadIdUseCase,
       createThreadUseCase,
       getThreadByIdUseCase,
-      getReplyByCommentIdUseCase,
     } = injections;
 
     this._createThreadUseCase = createThreadUseCase;
-    this._getCommentByThreadIdUseCase = getCommentByThreadIdUseCase;
     this._getThreadByIdUseCase = getThreadByIdUseCase;
-    this._getReplyByCommentIdUseCase = getReplyByCommentIdUseCase;
 
     this.postThreadHandler = this.postThreadHandler.bind(this);
     this.getThreadByIdHandler = this.getThreadByIdHandler.bind(this);
@@ -42,22 +38,12 @@ class ThreadsHandler {
   async getThreadByIdHandler(request, h) {
     const { threadId } = request.params;
 
-    const thread = await this._getThreadByIdUseCase.execute({ threadId });
-    const comments = await this._getCommentByThreadIdUseCase.execute(threadId);
-    const reply = await this._getReplyByCommentIdUseCase.execute(comments[0].id);
-
-    const detailThread = new DetailThread({
-      ...thread,
-      comments: [{
-        ...comments,
-        replies: reply,
-      }],
-    });
+    const thread = await this._getThreadByIdUseCase.execute(threadId);
 
     const response = h.response({
       status: 'success',
       data: {
-        thread: detailThread,
+        thread,
       },
     });
     response.code(200);

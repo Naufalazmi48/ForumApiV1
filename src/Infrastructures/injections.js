@@ -58,25 +58,24 @@ const useCaseInstanceContainer = {
   }),
   // ==================================== Thread UseCase
   createThreadUseCase: threadUseCase.createThread(serviceInstanceContainer.threadRepository),
-  getThreadByIdUseCase: threadUseCase.getThreadById(serviceInstanceContainer.threadRepository),
+  getThreadByIdUseCase: threadUseCase.getThreadById({
+    threadRepository: serviceInstanceContainer.threadRepository,
+    commentRepository: serviceInstanceContainer.commentRepository,
+    replyRepository: serviceInstanceContainer.replyRepository,
+  }),
   // ==================================== Comment Usecase
-  addCommentUseCase: commentUseCase.addComment(serviceInstanceContainer.commentRepository),
+  addCommentUseCase: commentUseCase.addComment({
+    threadRepository: serviceInstanceContainer.threadRepository,
+    commentRepository: serviceInstanceContainer.commentRepository,
+  }),
   deleteCommentUseCase: commentUseCase.deleteComment(serviceInstanceContainer.commentRepository),
-  verifyOwnerCommentUseCase: commentUseCase.verifyOwnerComment(
-    serviceInstanceContainer.commentRepository,
-  ),
-  getCommentByThreadIdUseCase: commentUseCase.getCommentsByThreadId(
-    serviceInstanceContainer.commentRepository,
-  ),
   // ==================================== Reply Usecase
-  addReplyUseCase: replyUseCase.addReply(serviceInstanceContainer.replyRepository),
+  addReplyUseCase: replyUseCase.addReply({
+    threadRepository: serviceInstanceContainer.threadRepository,
+    commentRepository: serviceInstanceContainer.commentRepository,
+    replyRepository: serviceInstanceContainer.replyRepository,
+  }),
   deleteReplyUseCase: replyUseCase.deleteReply(serviceInstanceContainer.replyRepository),
-  verifyOwnerReplyUseCase: replyUseCase.verifyOwnerReply(
-    serviceInstanceContainer.replyRepository,
-  ),
-  getReplyByCommentIdUseCase: replyUseCase.getReplyByCommentId(
-    serviceInstanceContainer.replyRepository,
-  ),
 };
 
 // export all instance

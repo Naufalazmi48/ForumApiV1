@@ -1,9 +1,11 @@
 const NewReply = require('../../../Domains/replies/entities/NewReply');
 
 class ReplyUseCase {
-  addReply(replyRepository) {
+  addReply({ replyRepository, commentRepository, threadRepository }) {
     return ({
       execute: async (payload) => {
+        await threadRepository.getThreadById(payload.threadId);
+        await commentRepository.validateCommentIsAvailable(payload.commentId);
         const newReply = new NewReply(payload);
         return replyRepository.addReply(newReply);
       },
@@ -12,19 +14,10 @@ class ReplyUseCase {
 
   deleteReply(replyRepository) {
     return ({
-      execute: async (payload) => replyRepository.deleteReply(payload),
-    });
-  }
-
-  verifyOwnerReply(replyRepository) {
-    return ({
-      execute: async (payload) => replyRepository.verifyOwnerReply(payload),
-    });
-  }
-
-  getReplyByCommentId(replyRepository) {
-    return ({
-      execute: async (commentId) => replyRepository.getReplyByCommentId(commentId),
+      execute: async (payload) => {
+        await replyRepository.verifyOwnerReply(payload)
+        await replyRepository.deleteReply(payload);
+      },
     });
   }
 }

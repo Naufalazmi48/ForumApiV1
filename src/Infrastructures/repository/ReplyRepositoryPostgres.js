@@ -44,7 +44,7 @@ class ReplyRepositoryPostgres extends ReplyRepository {
 
   async deleteReply({ replyId, commentId, owner }) {
     const isDelete = true;
-    const newContent = '**komentar telah dihapus**';
+    const newContent = '**balasan telah dihapus**';
     const query = {
       text: 'UPDATE replies SET is_delete = $1, content = $2 WHERE id = $3 AND owner = $4 AND comment_id = $5',
       values: [isDelete, newContent, replyId, owner, commentId],
@@ -53,20 +53,21 @@ class ReplyRepositoryPostgres extends ReplyRepository {
     await this._pool.query(query);
   }
 
+  _sortReplyByAscending(replys) {
+    return replys.sort((a, b) => new Date(a.date) - new Date(b.date));
+  }
+
   async getReplyByCommentId(commentId) {
     const query = {
       text: `SELECT replies.id, users.username, content, replies.date FROM replies 
       LEFT JOIN users ON replies.owner = users.id 
-      WHERE comment_id = $1`,
+      WHERE comment_id = $1 
+      ORDER BY replies.date ASC`,
       values: [commentId],
     };
 
     const result = await this._pool.query(query);
-
-    if (!result.rowCount) {
-      throw new NotFoundError('Maaf komentar tidak tersedia');
-    }
-    return result.rows;
+    return this._sortReplyByAscending(result.rows);
   }
 }
 

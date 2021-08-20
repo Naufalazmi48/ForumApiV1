@@ -39,7 +39,7 @@ describe('ReplyRepositoryPostgres', () => {
           commentId: 'comment-123',
           content: 'Karyamu keren',
           owner: 'user-123',
-          date: '27092000',
+          date: '27/09/2000',
         });
 
         const fakeIdGenerator = () => '123';

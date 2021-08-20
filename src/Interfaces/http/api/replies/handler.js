@@ -1,15 +1,10 @@
 const NewReply = require('../../../../Domains/replies/entities/NewReply');
 
 class ReplyHandler {
-  constructor(injections) {
-    const {
-      addReplyUseCase, verifyOwnerReplyUseCase, deleteReplyUseCase, getCommentByThreadIdUseCase,
-    } = injections;
+  constructor({ addReplyUseCase, deleteReplyUseCase }) {
 
     this._addReplyUseCase = addReplyUseCase;
-    this._verifyOwnerReplyUseCase = verifyOwnerReplyUseCase;
     this._deleteReplyUseCase = deleteReplyUseCase;
-    this._getCommentByThreadIdUseCase = getCommentByThreadIdUseCase;
 
     this.postReplyHandler = this.postReplyHandler.bind(this);
     this.deleteReplyHandler = this.deleteReplyHandler.bind(this);
@@ -24,7 +19,6 @@ class ReplyHandler {
     const newComment = new NewReply({
       threadId, content, owner, date, commentId,
     });
-    await this._getCommentByThreadIdUseCase.execute(threadId);
     const addedReply = await this._addReplyUseCase.execute(newComment);
     const response = h.response({
       status: 'success',
@@ -41,7 +35,6 @@ class ReplyHandler {
     const { commentId, replyId } = request.params;
 
     const addedReply = { owner, replyId, commentId };
-    await this._verifyOwnerReplyUseCase.execute(addedReply);
     await this._deleteReplyUseCase.execute(addedReply);
     const response = h.response({
       status: 'success',

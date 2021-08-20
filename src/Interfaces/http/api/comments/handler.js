@@ -1,14 +1,11 @@
 const NewComment = require('../../../../Domains/comments/entities/NewComment');
 
 class CommentHandler {
-  constructor(injections) {
-    const {
-      addCommentUseCase, getThreadByIdUseCase, verifyOwnerCommentUseCase, deleteCommentUseCase,
-    } = injections;
+  constructor({
+    addCommentUseCase, deleteCommentUseCase,
+  }) {
 
     this._addCommentUseCase = addCommentUseCase;
-    this._getThreadByIdUseCase = getThreadByIdUseCase;
-    this._verifyOwnerCommentUseCase = verifyOwnerCommentUseCase;
     this._deleteCommentUseCase = deleteCommentUseCase;
 
     this.postCommentHandler = this.postCommentHandler.bind(this);
@@ -24,7 +21,6 @@ class CommentHandler {
     const newComment = new NewComment({
       threadId, content, owner, date,
     });
-    await this._getThreadByIdUseCase.execute({ threadId });
     const addedComment = await this._addCommentUseCase.execute(newComment);
     const response = h.response({
       status: 'success',
@@ -41,7 +37,6 @@ class CommentHandler {
     const { threadId, commentId } = request.params;
 
     const addedComment = { owner, threadId, commentId };
-    await this._verifyOwnerCommentUseCase.execute(addedComment);
     await this._deleteCommentUseCase.execute(addedComment);
     const response = h.response({
       status: 'success',
