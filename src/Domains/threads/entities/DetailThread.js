@@ -1,5 +1,17 @@
 class DetailThread {
   constructor(payload) {
+
+    this._verify(payload);
+    
+    this.id = payload.id;
+    this.title = payload.title;
+    this.body = payload.body;
+    this.date = payload.date;
+    this.username = payload.username;
+    this.comments = payload.comments;
+  }
+
+  _verify(payload) {
     const {
       id, title, body, date, username, comments,
     } = payload;
@@ -13,13 +25,6 @@ class DetailThread {
       || !(comments instanceof Array) || !(comments[0].replies instanceof Array)) {
       throw new Error('DETAIL_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
-
-    this.id = id;
-    this.title = title;
-    this.body = body;
-    this.date = date;
-    this.username = username;
-    this.comments = comments;
   }
 }
 

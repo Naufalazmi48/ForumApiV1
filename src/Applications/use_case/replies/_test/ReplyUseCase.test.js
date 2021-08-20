@@ -32,6 +32,8 @@ describe('ReplyUseCase', () => {
       const mockThreadRepository = new ThreadRepository();
 
       /** Mocking needed function */
+      mockThreadRepository.getThreadById = jest.fn()
+        .mockImplementation(() => Promise.resolve());
       mockCommentRepository.validateCommentIsAvailable = jest.fn()
         .mockImplementation(() => Promise.resolve());
       mockReplyRepository.addReply = jest.fn()
@@ -40,6 +42,7 @@ describe('ReplyUseCase', () => {
       /** Creating instance  */
       const { addReply } = new ReplyUseCase();
       const addReplyUseCase = addReply({
+        threadRepository: mockThreadRepository,
         commentRepository: mockCommentRepository,
         replyRepository: mockReplyRepository,
       });
