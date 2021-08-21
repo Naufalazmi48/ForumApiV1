@@ -1,5 +1,4 @@
 const InvariantError = require('../../Commons/exceptions/InvariantError');
-const NotFoundError = require('../../Commons/exceptions/NotFoundError');
 const AddedUser = require('../../Domains/users/entities/AddedUser');
 const UserRepository = require('../../Domains/users/UserRepository');
 

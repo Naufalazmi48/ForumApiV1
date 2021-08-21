@@ -71,6 +71,7 @@ describe('ThreadUseCase', () => {
         username: 'dicoding',
         date: '27 09 2000',
         content: 'Kerennnn',
+        is_delete: false,
         replies: expectedReply,
       },
       {
@@ -92,11 +93,6 @@ describe('ThreadUseCase', () => {
         comments: expectedComments,
       };
 
-      const expectedDetailThread = new DetailThread({
-        ...expectedThread,
-        comments: expectedComments,
-      });
-
       /** Creating dependency of usecase */
       const mockThreadRepository = new ThreadRepository();
       const mockCommentRepository = new CommentRepository();
@@ -106,21 +102,9 @@ describe('ThreadUseCase', () => {
       mockThreadRepository.getThreadById = jest.fn()
         .mockImplementation(() => Promise.resolve(expectedThread));
       mockCommentRepository.getCommentsByThreadId = jest.fn()
-        .mockImplementation(() => Promise.resolve(expectedComments.map((comment) => {
-          if (comment.is_delete === true) {
-            return {...comment, content: '**komentar telah dihapus**'}
-          } else {
-            return comment;
-          } }
-        )));
+        .mockImplementation(() => Promise.resolve(expectedComments));
       mockReplyRepository.getReplyByCommentId = jest.fn()
-        .mockImplementation(() => Promise.resolve(expectedReply.map((reply) => {
-          if (reply.is_delete === true) {
-            return {...reply, content: '**balasan telah dihapus**'}
-          } else {
-            return reply;
-          }
-        })));
+        .mockImplementation(() => Promise.resolve(expectedReply));
 
       /** Creating instance  */
       const { getThreadById } = new ThreadUseCase();
