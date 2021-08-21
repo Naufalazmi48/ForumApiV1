@@ -5,8 +5,14 @@ const CommentTableTestHelper = require('../../../../tests/CommentTableTestHelper
 const ReplyTableTestHelper = require('../../../../tests/ReplyTableTestHelper');
 const ServerTestHelper = require('../../../../tests/ServerTestHelper');
 const Injection = require('../../injections');
+const pool = require('../../database/postgres/pool');
 
 describe('HTTP server', () => {
+
+  afterAll(async () => {
+    await pool.end();
+  });
+
   it('should response 404 when request unregistered route', async () => {
     // Arrange
     const server = await createServer({});

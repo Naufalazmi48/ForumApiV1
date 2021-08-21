@@ -63,6 +63,7 @@ describe('ThreadUseCase', () => {
         username: 'dicoding',
         date: '27 09 2000',
         content: 'Kerennnn',
+        is_delete: true,
       }];
 
       const expectedComments = [{
@@ -77,6 +78,7 @@ describe('ThreadUseCase', () => {
         username: 'naufal',
         date: '27 09 2000',
         content: 'mantap',
+        is_delete: true,
         replies: expectedReply,
       },
       ];
@@ -104,9 +106,21 @@ describe('ThreadUseCase', () => {
       mockThreadRepository.getThreadById = jest.fn()
         .mockImplementation(() => Promise.resolve(expectedThread));
       mockCommentRepository.getCommentsByThreadId = jest.fn()
-        .mockImplementation(() => Promise.resolve(expectedComments));
+        .mockImplementation(() => Promise.resolve(expectedComments.map((comment) => {
+          if (comment.is_delete === true) {
+            return {...comment, content: '**komentar telah dihapus**'}
+          } else {
+            return comment;
+          } }
+        )));
       mockReplyRepository.getReplyByCommentId = jest.fn()
-        .mockImplementation(() => Promise.resolve(expectedReply));
+        .mockImplementation(() => Promise.resolve(expectedReply.map((reply) => {
+          if (reply.is_delete === true) {
+            return {...reply, content: '**balasan telah dihapus**'}
+          } else {
+            return reply;
+          }
+        })));
 
       /** Creating instance  */
       const { getThreadById } = new ThreadUseCase();
@@ -120,7 +134,9 @@ describe('ThreadUseCase', () => {
       const threadResult = await getThreadUseCase.execute(expectedThread.id);
 
       /** Assert */
-      expect(expectedDetailThread).toEqual(threadResult);
+      expect(threadResult.id).toEqual('thread-123');
+      expect(threadResult.comments[1].content).toEqual('**komentar telah dihapus**');
+      expect(threadResult.comments[1].replies[0].content).toEqual('**balasan telah dihapus**');
     });
   });
 });

@@ -43,11 +43,9 @@ class CommentRepositoryPostgres extends CommentRepository {
   }
 
   async deleteComment({ threadId, commentId, owner }) {
-    const isDelete = true;
-    const newContent = '**komentar telah dihapus**';
     const query = {
-      text: 'UPDATE comments SET is_delete = $1, content = $2 WHERE id = $3 AND owner = $4 AND thread_id = $5',
-      values: [isDelete, newContent, commentId, owner, threadId],
+      text: 'UPDATE comments SET is_delete = true WHERE id = $1 AND owner = $2 AND thread_id = $3',
+      values: [commentId, owner, threadId],
     };
 
     await this._pool.query(query);

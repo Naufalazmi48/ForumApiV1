@@ -43,11 +43,9 @@ class ReplyRepositoryPostgres extends ReplyRepository {
   }
 
   async deleteReply({ replyId, commentId, owner }) {
-    const isDelete = true;
-    const newContent = '**balasan telah dihapus**';
     const query = {
-      text: 'UPDATE replies SET is_delete = $1, content = $2 WHERE id = $3 AND owner = $4 AND comment_id = $5',
-      values: [isDelete, newContent, replyId, owner, commentId],
+      text: 'UPDATE replies SET is_delete = true WHERE id = $1 AND owner = $2 AND comment_id = $3',
+      values: [replyId, owner, commentId],
     };
 
     await this._pool.query(query);
