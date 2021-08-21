@@ -6,6 +6,8 @@ const NewComment = require('../../../Domains/comments/entities/NewComment');
 const AddedComment = require('../../../Domains/comments/entities/AddedComment');
 const CommentTableTestHelper = require('../../../../tests/CommentTableTestHelper');
 const pool = require('../../database/postgres/pool');
+const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
+const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError');
 
 describe('CommentRepositoryPostgres', () => {
   it('should be instance of ThreadRepository domain', () => {
@@ -51,7 +53,9 @@ describe('CommentRepositoryPostgres', () => {
           owner: newComment.owner,
         }));
       });
+    });
 
+    describe('deleteComment function', () => {
       it('should persist Deleted Comment action correctly', async () => {
         // Arrange
         await UsersTableTestHelper.addUser({});
@@ -75,7 +79,7 @@ describe('CommentRepositoryPostgres', () => {
         expect(deletedComment).toHaveProperty('is_delete');
         expect(deletedComment.is_delete).toEqual(true);
       });
-    });
+    })
 
     describe('getCommentsByThreadId function', () => {
       it('should persist get comments correctly', async () => {
@@ -90,6 +94,7 @@ describe('CommentRepositoryPostgres', () => {
           content: 'Keren bang',
           username: 'dicoding',
           date,
+          is_delete: false,
         };
 
         const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
@@ -103,6 +108,12 @@ describe('CommentRepositoryPostgres', () => {
     });
 
     describe('validateCommentIsAvailable function', () => {
+      it ('should return Not Found Error when comment is not available', async () => {
+        // Arrange 
+        const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
+        // Action and Assert
+        expect(commentRepositoryPostgres.verifyOwnerComment(0)).rejects.toBeInstanceOf(NotFoundError);
+      })
       it('should persist get comments correctly', async () => {
         // Arrange
         await UsersTableTestHelper.addUser({});
@@ -126,5 +137,44 @@ describe('CommentRepositoryPostgres', () => {
         expect(commentOnThread).toEqual(expectedComment);
       });
     });
+
+    describe('verifyOwnerComment function', () => {
+      it('should return NotFound Error when using invalid body', async () => {
+        // Arrange 
+        const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
+        // Action and Assert
+        expect(commentRepositoryPostgres.verifyOwnerComment({})).rejects.toBeInstanceOf(NotFoundError);
+      })
+
+      it('should return Authorization Error when owner is invalid', async () => {
+        // Arrange 
+        await UsersTableTestHelper.addUser({});
+        await ThreadsTableTestHelper.createThread({});
+        await CommentTableTestHelper.addComment({});
+        const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
+        const payload = {
+          threadId: 'thread-123',
+          commentId: 'comment-123',
+          owner: 'ngasal',
+        }
+        // Action and Assert
+        expect(commentRepositoryPostgres.verifyOwnerComment(payload)).rejects.toBeInstanceOf(AuthorizationError);
+      })
+
+      it('should persist verify owner of comment correctly', async () => {
+         // Arrange 
+         await UsersTableTestHelper.addUser({});
+         await ThreadsTableTestHelper.createThread({});
+         await CommentTableTestHelper.addComment({});
+         const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
+         const payload = {
+           threadId: 'thread-123',
+           commentId: 'comment-123',
+           owner: 'user-123',
+         }
+         // Action and Assert
+        expect(commentRepositoryPostgres.verifyOwnerComment(payload)).resolves.toBeCalled;
+      })
+    })
   });
 });

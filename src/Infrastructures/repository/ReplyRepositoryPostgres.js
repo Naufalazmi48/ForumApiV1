@@ -14,10 +14,9 @@ class ReplyRepositoryPostgres extends ReplyRepository {
     commentId, content, owner, date,
   }) {
     const id = `reply-${this._idGenerator()}`;
-    const isDelete = false;
     const query = {
-      text: 'INSERT INTO replies VALUES($1, $2, $3, $4, $5, $6) RETURNING id, content, owner',
-      values: [id, commentId, content, owner, isDelete, date],
+      text: 'INSERT INTO replies VALUES($1, $2, $3, $4, false, $5) RETURNING id, content, owner',
+      values: [id, commentId, content, owner, date],
     };
     const result = await this._pool.query(query);
 
@@ -25,10 +24,9 @@ class ReplyRepositoryPostgres extends ReplyRepository {
   }
 
   async verifyOwnerReply({ replyId, commentId, owner }) {
-    const isDelete = false;
     const query = {
-      text: 'SELECT * FROM replies WHERE id = $1 AND is_delete = $2 AND comment_id = $3',
-      values: [replyId, isDelete, commentId],
+      text: 'SELECT * FROM replies WHERE id = $1 AND is_delete = false AND comment_id = $2',
+      values: [replyId, commentId],
     };
     const result = await this._pool.query(query);
 
@@ -57,7 +55,7 @@ class ReplyRepositoryPostgres extends ReplyRepository {
 
   async getReplyByCommentId(commentId) {
     const query = {
-      text: `SELECT replies.id, users.username, content, replies.date FROM replies 
+      text: `SELECT replies.id, users.username, content, replies.date, replies.is_delete FROM replies 
       LEFT JOIN users ON replies.owner = users.id 
       WHERE comment_id = $1 
       ORDER BY replies.date ASC`,

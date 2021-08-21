@@ -51,7 +51,7 @@ describe('ThreadUseCase', () => {
     });
   });
 
-  describe('GetDetailThreadUseCase', () => {
+  describe('GetThreadByIdUseCase', () => {
     it('should orchestrating the get detail thread action correctly', async () => {
       /**
          * Testing orchestrating create thread usecase correctly step by step

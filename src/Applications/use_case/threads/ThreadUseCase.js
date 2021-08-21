@@ -15,8 +15,8 @@ class ThreadUseCase {
     return ({
       execute: async (threadId) => {
         const thread = await threadRepository.getThreadById(threadId);
-        const commentsOnThread = await commentRepository.getCommentsByThreadId(thread.id);
-        commentsOnThread.map((comment) => {
+        const comments = await commentRepository.getCommentsByThreadId(thread.id);
+        const mappedComments = comments.map((comment) => {
           if (comment.is_delete === true) {
             return {...comment, content: '**komentar telah dihapus**'}
           } else {
@@ -24,9 +24,9 @@ class ThreadUseCase {
           } }
         );
         const result = [];
-        for (const comment of commentsOnThread) {
+        for (const comment of mappedComments) {
           const replies = await replyRepository.getReplyByCommentId(comment.id);
-          replies.map((reply) => {
+          const repliesMapped = replies.map((reply) => {
             if (reply.is_delete === true) {
               return {...reply, content: '**balasan telah dihapus**'}
             } else {
@@ -35,7 +35,7 @@ class ThreadUseCase {
           })
           result.push({
             ...comment,
-            replies,
+            replies: repliesMapped,
           });
         }
         await Promise.all(result);
