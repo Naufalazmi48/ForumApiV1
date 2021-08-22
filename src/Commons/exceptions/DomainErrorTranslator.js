@@ -25,6 +25,10 @@ DomainErrorTranslator._directories = {
   'NEW_REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat reply komentar baru karena tipe data tidak sesuai'),
   'DETAIL_THREAD.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat mengambil detail thread karena properti yang dibutuhkan tidak ada'),
   'DETAIL_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat mengambil detail thread karena tipe data tidak sesuai'),
+  'DETAIL_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat mengambil detail komentar karena properti yang dibutuhkan tidak ada'),
+  'DETAIL_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat mengambil detail komentar karena tipe data tidak sesuai'),
+  'DETAIL_REPLY.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat mengambil detail balasan karena properti yang dibutuhkan tidak ada'),
+  'DETAIL_REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat mengambil detail balasan karena tipe data tidak sesuai'),
 };
 
 module.exports = DomainErrorTranslator;

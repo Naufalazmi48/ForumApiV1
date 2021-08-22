@@ -2,6 +2,7 @@ const AddedReply = require('../../Domains/replies/entities/AddedReply');
 const ReplyRepository = require('../../Domains/replies/ReplyRepository');
 const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
 const NotFoundError = require('../../Commons/exceptions/NotFoundError');
+const DetailReply = require('../../Domains/replies/entities/DetailReply');
 
 class ReplyRepositoryPostgres extends ReplyRepository {
   constructor(pool, idGenerator) {
@@ -63,7 +64,11 @@ class ReplyRepositoryPostgres extends ReplyRepository {
     };
 
     const result = await this._pool.query(query);
-    return this._sortReplyByAscending(result.rows);
+    const replies = result.rows.map((reply) => {
+      const detailReply = new DetailReply(reply);
+      return { ...detailReply };
+    });
+    return this._sortReplyByAscending(replies);
   }
 }
 

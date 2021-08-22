@@ -3,6 +3,8 @@ const ThreadRepository = require('../../../../Domains/threads/ThreadRepository')
 const ThreadUseCase = require('../ThreadUseCase');
 const NewThread = require('../../../../Domains/threads/entities/NewThread');
 const DetailThread = require('../../../../Domains/threads/entities/DetailThread');
+const DetailComment = require('../../../../Domains/comments/entities/DetailComment');
+const DetailReply = require('../../../../Domains/replies/entities/DetailReply');
 const CommentRepository = require('../../../../Domains/comments/CommentRepository');
 const ReplyRepository = require('../../../../Domains/replies/ReplyRepository');
 
@@ -58,40 +60,35 @@ describe('ThreadUseCase', () => {
          */
       // Arrange
 
-      const expectedReply = [{
-        id: 'reply-123',
-        username: 'dicoding',
-        date: '27 09 2000',
-        content: 'Kerennnn',
-        is_delete: true,
-      }];
-
-      const expectedComments = [{
-        id: 'comment-123',
-        username: 'dicoding',
-        date: '27 09 2000',
-        content: 'Kerennnn',
-        is_delete: false,
-        replies: expectedReply,
-      },
-      {
-        id: 'comment-456',
-        username: 'naufal',
-        date: '27 09 2000',
-        content: 'mantap',
-        is_delete: true,
-        replies: expectedReply,
-      },
+      const expectedReply = [
+        new DetailReply({
+          id: 'reply-123',
+          username: 'dicoding',
+          date: '27 09 2000',
+          content: '**balasan telah dihapus**',
+          is_delete: true,
+        })
       ];
 
-      const expectedThread = {
+      const expectedComments = [
+        new DetailComment({
+          id: 'comment-123',
+          username: 'dicoding',
+          date: '27 09 2000',
+          content: '**komentar telah dihapus**',
+          is_delete: true,
+          replies: [{ ...expectedReply[0] }],
+        }),
+      ];
+
+      const expectedThread = new DetailThread({
         id: 'thread-123',
         title: 'sebuah thread',
         body: 'dummy',
         date: '28092000',
         username: 'naufal',
-        comments: expectedComments,
-      };
+        comments: [{ ...expectedComments[0] }],
+      });
 
       /** Creating dependency of usecase */
       const mockThreadRepository = new ThreadRepository();
@@ -102,9 +99,9 @@ describe('ThreadUseCase', () => {
       mockThreadRepository.getThreadById = jest.fn()
         .mockImplementation(() => Promise.resolve(expectedThread));
       mockCommentRepository.getCommentsByThreadId = jest.fn()
-        .mockImplementation(() => Promise.resolve(expectedComments));
+        .mockImplementation(() => Promise.resolve([{ ...expectedComments[0] }]));
       mockReplyRepository.getReplyByCommentId = jest.fn()
-        .mockImplementation(() => Promise.resolve(expectedReply));
+        .mockImplementation(() => Promise.resolve([{ ...expectedReply[0] }]));
 
       /** Creating instance  */
       const { getThreadById } = new ThreadUseCase();
@@ -118,9 +115,7 @@ describe('ThreadUseCase', () => {
       const threadResult = await getThreadUseCase.execute(expectedThread.id);
 
       /** Assert */
-      expect(threadResult.id).toEqual('thread-123');
-      expect(threadResult.comments[1].content).toEqual('**komentar telah dihapus**');
-      expect(threadResult.comments[1].replies[0].content).toEqual('**balasan telah dihapus**');
+      expect(threadResult).toStrictEqual(expectedThread);
     });
   });
 });

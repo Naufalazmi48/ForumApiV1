@@ -134,22 +134,19 @@ describe('ReplyRepositoryPostgres', () => {
         await ThreadsTableTestHelper.createThread({});
         const date = new Date().toISOString();
         await CommentTableTestHelper.addComment({});
-        await ReplyTableTestHelper.addReply({ date });
+        await ReplyTableTestHelper.addReply({ date, isDelete: true });
         const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, {});
-
-        const expectedReply = {
-          id: 'reply-123',
-          content: 'Keren bang',
-          username: 'dicoding',
-          date,
-          is_delete: false,
-        };
 
         // Action
         const replies = await replyRepositoryPostgres.getReplyByCommentId('comment-123');
 
         // Assert
-        expect(replies[0]).toEqual(expectedReply);
+        expect({...replies[0]}).toStrictEqual({
+          id: 'reply-123',
+          content: '**balasan telah dihapus**',
+          username: 'dicoding',
+          date,
+        });
       });
     });
 

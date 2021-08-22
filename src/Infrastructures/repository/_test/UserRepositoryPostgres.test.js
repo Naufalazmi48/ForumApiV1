@@ -5,7 +5,6 @@ const NewUser = require('../../../Domains/users/entities/NewUser');
 const AddedUser = require('../../../Domains/users/entities/AddedUser');
 const pool = require('../../database/postgres/pool');
 const UserRepositoryPostgres = require('../UserRepositoryPostgres');
-const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 
 describe('UserRepositoryPostgres', () => {
   it('should be instance of UserRepository domain', () => {

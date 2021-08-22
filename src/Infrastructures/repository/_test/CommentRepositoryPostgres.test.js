@@ -87,15 +87,7 @@ describe('CommentRepositoryPostgres', () => {
         await UsersTableTestHelper.addUser({});
         await ThreadsTableTestHelper.createThread({});
         const date = new Date().toISOString();
-        await CommentTableTestHelper.addComment({ date });
-
-        const expectedComment = {
-          id: 'comment-123',
-          content: 'Keren bang',
-          username: 'dicoding',
-          date,
-          is_delete: false,
-        };
+        await CommentTableTestHelper.addComment({ date, isDelete: true });
 
         const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
 
@@ -103,7 +95,13 @@ describe('CommentRepositoryPostgres', () => {
         const commentOnThread = await commentRepositoryPostgres.getCommentsByThreadId('thread-123');
 
         // Assert
-        expect(commentOnThread[0]).toEqual(expectedComment);
+        expect({...commentOnThread[0]}).toStrictEqual({
+          id: 'comment-123',
+          content: '**komentar telah dihapus**',
+          username: 'dicoding',
+          date,
+          replies: [],
+        });
       });
     });
 
