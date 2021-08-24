@@ -472,5 +472,45 @@ describe('HTTP server', () => {
       expect(response.statusCode).toEqual(403);
       expect(responseJson.status).toEqual('fail');
       expect(responseJson.message).toEqual('Anda tidak berhak menghapus reply ini');
+    });
+
+    it('should response 200 when request delete reply with valid body request', async () => {
+      // Arrange
+      const accessToken = await ServerTestHelper.getAccessToken();
+      await ThreadsTableTestHelper.createThread({});
+      await CommentTableTestHelper.addComment({});
+      await ReplyTableTestHelper.addReply({});
+
+      const server = await createServer(Injection);
+
+      // Action
+      const response = await server.inject({
+        url: '/threads/thread-123/comments/comment-123/replies/reply-123',
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(200);
+      expect(responseJson.status).toEqual('success');
+    });
+  });
+
+  describe('when GET /', () => {
+    it('should return 200 and hello world', async () => {
+      // Arrange
+      const server = await createServer({});
+      // Action
+      const response = await server.inject({
+        method: 'GET',
+        url: '/',
+      });
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(200);
+      expect(responseJson.value).toEqual('Hello world!');
+    });
   });
 });
