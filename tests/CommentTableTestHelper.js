@@ -1,6 +1,7 @@
 /* istanbul ignore file */
 
 const pool = require('../src/Infrastructures/database/postgres/pool');
+const DetailComment = require('../src/Domains/comments/entities/DetailComment');
 
 const CommentTableTestHelper = {
   async addComment({
@@ -39,6 +40,14 @@ const CommentTableTestHelper = {
 
   async cleanTable() {
     await pool.query('DELETE FROM comments WHERE 1=1');
+  },
+
+  async postLikeOnComment(id = 'commentlikes-123', { userId = 'user-123', commentId = 'comment-123' }) {
+    const query = {
+      text: 'INSERT INTO commentlikes VALUES($1, $2, $3)',
+      values: [id, commentId, userId],
+    };
+    await pool.query(query);
   },
 };
 

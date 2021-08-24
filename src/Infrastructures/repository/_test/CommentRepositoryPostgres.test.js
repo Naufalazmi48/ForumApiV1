@@ -1,3 +1,4 @@
+const { nanoid } = require('nanoid');
 const CommentRepositoryPostgres = require('../CommentRepositoryPostgres');
 const CommentRepository = require('../../../Domains/comments/CommentRepository');
 const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
@@ -180,6 +181,63 @@ describe('CommentRepositoryPostgres', () => {
         // Assert
         expect(spyVerifyOwnerComment).toBeCalledWith(payload);
         expect(spyVerifyOwnerComment).toBeCalledTimes(1);
+      });
+    });
+
+    describe('Update Comment Like Function', () => {
+      it('should persist update comment when comment has been liked correctly', async () => {
+        await UsersTableTestHelper.addUser({});
+        await ThreadsTableTestHelper.createThread({});
+        await CommentTableTestHelper.addComment({});
+        await CommentTableTestHelper.postLikeOnComment({}, {});
+        const payload = {
+          userId: 'user-123',
+          commentId: 'comment-123',
+        };
+        const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, nanoid);
+        const spyVerifyCommentHasBeenLiked = jest.spyOn(commentRepositoryPostgres, 'verifyCommentHasBeenLiked');
+        const spyDeleteLikeOnComment = jest.spyOn(commentRepositoryPostgres, 'deleteLikeOnComment');
+        // Action
+        await commentRepositoryPostgres.verifyCommentHasBeenLiked(payload);
+        await commentRepositoryPostgres.deleteLikeOnComment(payload);
+        // Assert
+        expect(spyVerifyCommentHasBeenLiked).toBeCalledWith(payload);
+        expect(spyDeleteLikeOnComment).toBeCalledWith(payload);
+      });
+
+      it('should persist update comment when comment not liked correctly', async () => {
+        await UsersTableTestHelper.addUser({});
+        await ThreadsTableTestHelper.createThread({});
+        await CommentTableTestHelper.addComment({});
+        const payload = {
+          userId: 'user-123',
+          commentId: 'comment-123',
+        };
+        const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, nanoid);
+        const spyVerifyCommentHasBeenLiked = jest.spyOn(commentRepositoryPostgres, 'verifyCommentHasBeenLiked');
+        const spyPostLikeOnComment = jest.spyOn(commentRepositoryPostgres, 'postLikeOnComment');
+        // Action
+        await commentRepositoryPostgres.verifyCommentHasBeenLiked(payload);
+        await commentRepositoryPostgres.postLikeOnComment(payload);
+        // Assert
+        expect(spyVerifyCommentHasBeenLiked).toBeCalledWith(payload);
+        expect(spyPostLikeOnComment).toBeCalledWith(payload);
+      });
+    });
+
+    describe('Get likes on comment count Function', () => {
+      it('should persist get likes on comment correctly', async () => {
+        // Arrange
+        await UsersTableTestHelper.addUser({});
+        await ThreadsTableTestHelper.createThread({});
+        await CommentTableTestHelper.addComment({});
+        await CommentTableTestHelper.postLikeOnComment({}, {});
+
+        const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
+        // Action
+        const likeCount = await commentRepositoryPostgres.getLikesOnComment('comment-123');
+        // Assert
+        expect(likeCount).toEqual(1);
       });
     });
   });

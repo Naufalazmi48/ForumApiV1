@@ -11,6 +11,10 @@ class DetailComment {
 
   static get DELETED_COMMENT_CONTENT() { return '**komentar telah dihapus**'; }
 
+  static get LIKED_COMMENT() { return 1; }
+
+  static get UNLIKED_COMMENT() { return -1; }
+
   _verify(payload) {
     if (this._isPayloadNotContainNeededProperty(payload)) {
       throw new Error('DETAIL_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY');

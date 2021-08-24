@@ -21,6 +21,7 @@ class ThreadUseCase {
           result.push({
             ...comment,
             replies: await replyRepository.getReplyByCommentId(comment.id),
+            likeCount: await commentRepository.getLikesOnComment(comment.id),
           });
         }
         await Promise.all(result);

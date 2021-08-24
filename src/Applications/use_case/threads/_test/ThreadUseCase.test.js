@@ -59,26 +59,25 @@ describe('ThreadUseCase', () => {
          * Testing orchestrating create thread usecase correctly step by step
          */
       // Arrange
+      const expectedLikeCount = 20;
 
-      const expectedReply = [
-        new DetailReply({
-          id: 'reply-123',
-          username: 'dicoding',
-          date: '27 09 2000',
-          content: DetailReply.DELETED_REPLY_CONTENT,
-          isDelete: true,
-        }),
-      ];
+      const expectedReply = [{
+        id: 'reply-123',
+        username: 'dicoding',
+        date: '27 09 2000',
+        content: DetailReply.DELETED_REPLY_CONTENT,
+        isDelete: true,
+      }];
 
-      const expectedComments = [
-        new DetailComment({
-          id: 'comment-123',
-          username: 'dicoding',
-          date: '27 09 2000',
-          content: DetailComment.DELETED_COMMENT_CONTENT,
-          isDelete: true,
-          replies: [{ ...expectedReply[0] }],
-        }),
+      const expectedComments = [{
+        id: 'comment-123',
+        username: 'dicoding',
+        date: '27 09 2000',
+        content: DetailComment.DELETED_COMMENT_CONTENT,
+        isDelete: true,
+        replies: [{ ...expectedReply[0] }],
+        likeCount: expectedLikeCount,
+      },
       ];
 
       const expectedThread = new DetailThread({
@@ -102,6 +101,8 @@ describe('ThreadUseCase', () => {
         .mockImplementation(() => Promise.resolve([{ ...expectedComments[0] }]));
       mockReplyRepository.getReplyByCommentId = jest.fn()
         .mockImplementation(() => Promise.resolve([{ ...expectedReply[0] }]));
+      mockCommentRepository.getLikesOnComment = jest.fn()
+        .mockImplementation(() => Promise.resolve(expectedLikeCount));
 
       /** Creating instance  */
       const { getThreadById } = new ThreadUseCase();

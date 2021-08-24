@@ -136,6 +136,7 @@ describe('HTTP server', () => {
       const accessToken = await ServerTestHelper.getAccessToken();
       await ThreadsTableTestHelper.createThread({});
       await CommentTableTestHelper.addComment({});
+      await CommentTableTestHelper.postLikeOnComment({}, {});
       await ReplyTableTestHelper.addReply({ date: '20/08/2021' });
       await ReplyTableTestHelper.addReply({ date: '15/08/2021', id: 'reply-456', content: 'biasa aja' });
       await ReplyTableTestHelper.addReply({ date: '28/08/2021', id: 'reply-678', content: 'mantappu jiwa' });
@@ -158,6 +159,7 @@ describe('HTTP server', () => {
       expect(responseJson.data.thread).toBeDefined();
       expect(responseJson.data.thread.id).toEqual(threadId);
       expect(responseJson.data.thread.comments).toBeInstanceOf(Array);
+      expect(responseJson.data.thread.comments[0].likeCount).toEqual(1);
     });
   });
 
@@ -303,6 +305,27 @@ describe('HTTP server', () => {
       const response = await server.inject({
         url: '/threads/thread-123/comments/comment-123',
         method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(200);
+      expect(responseJson.status).toEqual('success');
+    });
+
+    it('should response 200 when request post like in comment with valid body request', async () => {
+      // Arrange
+      const accessToken = await ServerTestHelper.getAccessToken();
+      await ThreadsTableTestHelper.createThread({});
+      await CommentTableTestHelper.addComment({});
+      const server = await createServer(Injection);
+
+      // Action
+      const response = await server.inject({
+        url: '/threads/thread-123/comments/comment-123/likes',
+        method: 'PUT',
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },

@@ -69,6 +69,10 @@ const useCaseInstanceContainer = {
     commentRepository: serviceInstanceContainer.commentRepository,
   }),
   deleteCommentUseCase: commentUseCase.deleteComment(serviceInstanceContainer.commentRepository),
+  updateCommentLikesUseCase: commentUseCase.updateCommentLikes({
+    threadRepository: serviceInstanceContainer.threadRepository,
+    commentRepository: serviceInstanceContainer.commentRepository,
+  }),
   // ==================================== Reply Usecase
   addReplyUseCase: replyUseCase.addReply({
     threadRepository: serviceInstanceContainer.threadRepository,

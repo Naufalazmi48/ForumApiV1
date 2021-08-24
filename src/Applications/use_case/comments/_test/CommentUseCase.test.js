@@ -1,5 +1,6 @@
 const NewComment = require('../../../../Domains/comments/entities/NewComment');
 const AddedComment = require('../../../../Domains/comments/entities/AddedComment');
+const DetailComment = require('../../../../Domains/comments/entities/DetailComment');
 const CommentRepository = require('../../../../Domains/comments/CommentRepository');
 const ThreadRepository = require('../../../../Domains/threads/ThreadRepository');
 const CommentUseCase = require('../CommentUseCase');
@@ -48,7 +49,7 @@ describe('CommentUseCase', () => {
     });
   });
 
-  describe('Delete comment use case', () => {
+  describe('Delete comment Use Case', () => {
     it('should orchestrating the delete comment action correctly', async () => {
       // Arrange
       const addedComment = {
@@ -76,6 +77,82 @@ describe('CommentUseCase', () => {
       /** Assert */
       expect(mockCommentRepository.verifyOwnerComment).toBeCalledWith(addedComment);
       expect(mockCommentRepository.deleteComment).toBeCalledWith(addedComment);
+    });
+  });
+
+  describe('Update comment likes Use Case', () => {
+    it('should orchestrating the update comment likes action correctly when comment not liked', async () => {
+      // Arrange
+      const payload = {
+        commentId: 'comment-123',
+        userId: 'user-123',
+      };
+      // Creating dependency of use case
+      const mockCommentRepository = new CommentRepository();
+      const mockThreadRepository = new ThreadRepository();
+      // Mocking needed function
+      mockThreadRepository.getThreadById = jest.fn()
+        .mockImplementation(() => Promise.resolve());
+      mockCommentRepository.verifyCommentHasBeenLiked = jest.fn()
+        .mockImplementation(() => Promise.resolve(DetailComment.UNLIKED_COMMENT));
+      mockCommentRepository.validateCommentIsAvailable = jest.fn()
+        .mockImplementation(() => Promise.resolve());
+      mockCommentRepository.postLikeOnComment = jest.fn()
+        .mockImplementation(() => Promise.resolve());
+      // Creating instance
+      const { updateCommentLikes } = new CommentUseCase();
+      const updateCommentLikesUseCase = updateCommentLikes({
+        threadRepository: mockThreadRepository,
+        commentRepository: mockCommentRepository,
+      });
+      // Action
+      await updateCommentLikesUseCase.execute(payload);
+      // Assert
+      expect(mockThreadRepository.getThreadById)
+        .toHaveBeenCalled();
+      expect(mockCommentRepository.validateCommentIsAvailable)
+        .toBeCalledWith(payload.commentId);
+      expect(mockCommentRepository.verifyCommentHasBeenLiked)
+        .toHaveBeenCalled();
+      expect(mockCommentRepository.postLikeOnComment)
+        .toBeCalledWith(payload);
+    });
+
+    it('should orchestrating the update comment likes action correctly when comment has been liked', async () => {
+      // Arrange
+      const payload = {
+        commentId: 'comment-123',
+        userId: 'user-123',
+      };
+      // Creating dependency of use case
+      const mockCommentRepository = new CommentRepository();
+      const mockThreadRepository = new ThreadRepository();
+      // Mocking needed function
+      mockThreadRepository.getThreadById = jest.fn()
+        .mockImplementation(() => Promise.resolve());
+      mockCommentRepository.verifyCommentHasBeenLiked = jest.fn()
+        .mockImplementation(() => Promise.resolve(DetailComment.LIKED_COMMENT));
+      mockCommentRepository.validateCommentIsAvailable = jest.fn()
+        .mockImplementation(() => Promise.resolve());
+      mockCommentRepository.deleteLikeOnComment = jest.fn()
+        .mockImplementation(() => Promise.resolve());
+      // Creating instance
+      const { updateCommentLikes } = new CommentUseCase();
+      const updateCommentLikesUseCase = updateCommentLikes({
+        threadRepository: mockThreadRepository,
+        commentRepository: mockCommentRepository,
+      });
+      // Action
+      await updateCommentLikesUseCase.execute(payload);
+      // Assert
+      expect(mockThreadRepository.getThreadById)
+        .toHaveBeenCalled();
+      expect(mockCommentRepository.validateCommentIsAvailable)
+        .toBeCalledWith(payload.commentId);
+      expect(mockCommentRepository.verifyCommentHasBeenLiked)
+        .toHaveBeenCalled();
+      expect(mockCommentRepository.deleteLikeOnComment)
+        .toBeCalledWith(payload);
     });
   });
 });

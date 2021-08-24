@@ -2,13 +2,15 @@ const NewComment = require('../../../../Domains/comments/entities/NewComment');
 
 class CommentHandler {
   constructor({
-    addCommentUseCase, deleteCommentUseCase,
+    addCommentUseCase, deleteCommentUseCase, updateCommentLikesUseCase,
   }) {
     this._addCommentUseCase = addCommentUseCase;
     this._deleteCommentUseCase = deleteCommentUseCase;
+    this._updateCommentLikesUseCase = updateCommentLikesUseCase;
 
     this.postCommentHandler = this.postCommentHandler.bind(this);
     this.deleteCommentHandler = this.deleteCommentHandler.bind(this);
+    this.putCommentLikeHandler = this.putCommentLikeHandler.bind(this);
   }
 
   async postCommentHandler(request, h) {
@@ -28,6 +30,18 @@ class CommentHandler {
       },
     });
     response.code(201);
+    return response;
+  }
+
+  async putCommentLikeHandler(request, h) {
+    const { id: userId } = request.auth.credentials;
+    const { threadId, commentId } = request.params;
+
+    await this._updateCommentLikesUseCase.execute({ userId, threadId, commentId });
+    const response = h.response({
+      status: 'success',
+    });
+    response.code(200);
     return response;
   }
 

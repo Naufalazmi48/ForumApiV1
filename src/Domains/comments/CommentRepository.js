@@ -18,6 +18,22 @@ class CommentRepository {
   async validateCommentIsAvailable(commentId) {
     throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
+
+  async verifyCommentHasBeenLiked({ commentId, userId }) {
+    throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
+  }
+
+  async postLikeOnComment({ commentId, userId }) {
+    throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
+  }
+
+  async deleteLikeOnComment({ commentId, userId }) {
+    throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
+  }
+
+  async getLikesOnComment(commentId) {
+    throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
+  }
 }
 
 module.exports = CommentRepository;
