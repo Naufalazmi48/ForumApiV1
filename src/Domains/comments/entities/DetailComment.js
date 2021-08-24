@@ -1,32 +1,51 @@
 class DetailComment {
-    constructor(payload) {
-        const payloadVerified = this._verify(payload);
+  constructor(payload) {
+    const payloadVerified = this._verify(payload);
 
-        this.id = payloadVerified.id;
-        this.username = payloadVerified.username;
-        this.content = payloadVerified.content;
-        this.date = payloadVerified.date;
-        this.replies = payloadVerified.replies;
+    this.id = payloadVerified.id;
+    this.username = payloadVerified.username;
+    this.content = payloadVerified.content;
+    this.date = payloadVerified.date;
+    this.replies = payloadVerified.replies;
+  }
+
+  static get DELETED_COMMENT_CONTENT() { return '**komentar telah dihapus**'; }
+
+  _verify(payload) {
+    if (this._isPayloadNotContainNeededProperty(payload)) {
+      throw new Error('DETAIL_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY');
     }
 
-    _verify(payload) {
-        const { id, username, content, date, is_delete, replies } = payload;
-        
-        if (!id || !username || !content || !date || is_delete === undefined || !replies) {
-            throw new Error('DETAIL_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY');
-        }
-
-        if (typeof id !== 'string' || typeof username !== 'string' || typeof content !== 'string' ||
-            typeof date !== 'string' || typeof is_delete !== 'boolean' || !(replies instanceof Array)) {
-                throw new Error('DETAIL_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION')
-            }
-        
-        if (is_delete) {
-            const newContent = '**komentar telah dihapus**'
-            return { id, username, content:newContent, date, replies };
-        }
-        return { id, username, content, date, replies }
+    if (this._isPayloadNotMeetDataTypeSpecification(payload)) {
+      throw new Error('DETAIL_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
+
+    if (payload.isDelete) {
+      return {
+        ...payload, content: DetailComment.DELETED_COMMENT_CONTENT,
+      };
+    }
+    return payload;
+  }
+
+  _isPayloadNotContainNeededProperty({
+    id, username, content, date, isDelete, replies,
+  }) {
+    return (!id || !username || !content || !date || isDelete === undefined || !replies);
+  }
+
+  _isPayloadNotMeetDataTypeSpecification({
+    id, username, content, date, isDelete, replies,
+  }) {
+    return (
+      typeof id !== 'string'
+      || typeof username !== 'string'
+      || typeof content !== 'string'
+      || typeof date !== 'string'
+      || typeof isDelete !== 'boolean'
+      || !(replies instanceof Array)
+    );
+  }
 }
 
 module.exports = DetailComment;

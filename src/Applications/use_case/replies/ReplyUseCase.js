@@ -15,7 +15,7 @@ class ReplyUseCase {
   deleteReply(replyRepository) {
     return ({
       execute: async (payload) => {
-        await replyRepository.verifyOwnerReply(payload)
+        await replyRepository.verifyOwnerReply(payload);
         await replyRepository.deleteReply(payload);
       },
     });

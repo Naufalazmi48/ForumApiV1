@@ -4,7 +4,6 @@ class CommentHandler {
   constructor({
     addCommentUseCase, deleteCommentUseCase,
   }) {
-
     this._addCommentUseCase = addCommentUseCase;
     this._deleteCommentUseCase = deleteCommentUseCase;
 

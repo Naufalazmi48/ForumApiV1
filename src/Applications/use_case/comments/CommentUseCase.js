@@ -1,7 +1,7 @@
 const NewComment = require('../../../Domains/comments/entities/NewComment');
 
 class CommentUseCase {
-  addComment({threadRepository, commentRepository}) {
+  addComment({ threadRepository, commentRepository }) {
     return ({
       execute: async (payload) => {
         await threadRepository.getThreadById(payload.threadId);
@@ -14,8 +14,8 @@ class CommentUseCase {
   deleteComment(commentRepository) {
     return ({
       execute: async (payload) => {
-        await commentRepository.verifyOwnerComment(payload)
-        await commentRepository.deleteComment(payload)
+        await commentRepository.verifyOwnerComment(payload);
+        await commentRepository.deleteComment(payload);
       },
     });
   }

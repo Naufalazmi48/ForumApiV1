@@ -23,7 +23,7 @@ const ReplyTableTestHelper = {
       values: [replyId, owner],
     };
     const result = await pool.query(query);
-    return result.rows[0];
+    return { ...result.rows[0], isDelete: result.rows[0].is_delete };
   },
 
   async cleanTable() {

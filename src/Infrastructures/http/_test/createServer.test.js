@@ -8,7 +8,6 @@ const Injection = require('../../injections');
 const pool = require('../../database/postgres/pool');
 
 describe('HTTP server', () => {
-
   afterAll(async () => {
     await pool.end();
   });

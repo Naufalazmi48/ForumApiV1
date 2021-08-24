@@ -1,8 +1,7 @@
 class DetailThread {
   constructor(payload) {
-
     this._verify(payload);
-    
+
     this.id = payload.id;
     this.title = payload.title;
     this.body = payload.body;

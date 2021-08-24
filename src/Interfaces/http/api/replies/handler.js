@@ -2,7 +2,6 @@ const NewReply = require('../../../../Domains/replies/entities/NewReply');
 
 class ReplyHandler {
   constructor({ addReplyUseCase, deleteReplyUseCase }) {
-
     this._addReplyUseCase = addReplyUseCase;
     this._deleteReplyUseCase = deleteReplyUseCase;
 

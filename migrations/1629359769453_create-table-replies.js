@@ -20,7 +20,7 @@ exports.up = (pgm) => {
       type: 'VARCHAR(50)',
       notNull: true,
     },
-    is_delete: {
+    isDelete: {
       type: 'BOOLEAN',
       notNull: true,
     },

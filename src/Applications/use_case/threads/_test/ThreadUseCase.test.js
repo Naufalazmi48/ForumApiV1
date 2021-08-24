@@ -65,9 +65,9 @@ describe('ThreadUseCase', () => {
           id: 'reply-123',
           username: 'dicoding',
           date: '27 09 2000',
-          content: '**balasan telah dihapus**',
-          is_delete: true,
-        })
+          content: DetailReply.DELETED_REPLY_CONTENT,
+          isDelete: true,
+        }),
       ];
 
       const expectedComments = [
@@ -75,8 +75,8 @@ describe('ThreadUseCase', () => {
           id: 'comment-123',
           username: 'dicoding',
           date: '27 09 2000',
-          content: '**komentar telah dihapus**',
-          is_delete: true,
+          content: DetailComment.DELETED_COMMENT_CONTENT,
+          isDelete: true,
           replies: [{ ...expectedReply[0] }],
         }),
       ];

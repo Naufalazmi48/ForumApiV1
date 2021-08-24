@@ -4,6 +4,7 @@ const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const NewReply = require('../../../Domains/replies/entities/NewReply');
 const AddedReply = require('../../../Domains/replies/entities/AddedReply');
+const DetailReply = require('../../../Domains/replies/entities/DetailReply');
 const CommentTableTestHelper = require('../../../../tests/CommentTableTestHelper');
 const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError');
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
@@ -29,7 +30,7 @@ describe('ReplyRepositoryPostgres', () => {
       await pool.end();
     });
 
-    describe('addReply function',  () => {
+    describe('addReply function', () => {
       it('should persist new Comment and return Added Comment correctly', async () => {
         // Arrange
         await UsersTableTestHelper.addUser({});
@@ -59,7 +60,7 @@ describe('ReplyRepositoryPostgres', () => {
       });
     });
 
-    describe('deleteReply function',  () => {
+    describe('deleteReply function', () => {
       it('should persist Deleted Comment action correctly', async () => {
         // Arrange
         await UsersTableTestHelper.addUser({});
@@ -81,21 +82,21 @@ describe('ReplyRepositoryPostgres', () => {
         const deletedReply = await ReplyTableTestHelper.getReply(addedReply);
 
         // Assert
-        expect(deletedReply).toHaveProperty('is_delete');
-        expect(deletedReply.is_delete).toEqual(true);
+        expect(deletedReply).toHaveProperty('isDelete');
+        expect(deletedReply.isDelete).toEqual(true);
       });
-    })
+    });
 
-    describe('verifyOwnerReply function',  () => {
+    describe('verifyOwnerReply function', () => {
       it('should return NotFound Error when using invalid body', async () => {
-        // Arrange 
+        // Arrange
         const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, {});
         // Action and Assert
         expect(replyRepositoryPostgres.verifyOwnerReply({})).rejects.toBeInstanceOf(NotFoundError);
-      })
+      });
 
       it('should return Authorization Error when owner is invalid', async () => {
-        // Arrange 
+        // Arrange
         await UsersTableTestHelper.addUser({});
         await ThreadsTableTestHelper.createThread({});
         await CommentTableTestHelper.addComment({});
@@ -105,27 +106,32 @@ describe('ReplyRepositoryPostgres', () => {
           replyId: 'reply-123',
           commentId: 'comment-123',
           owner: 'ngasal',
-        }
+        };
         // Action and Assert
-        expect(replyRepositoryPostgres.verifyOwnerReply(payload)).rejects.toBeInstanceOf(AuthorizationError);
-      })
+        expect(replyRepositoryPostgres.verifyOwnerReply(payload))
+          .rejects.toBeInstanceOf(AuthorizationError);
+      });
 
       it('should persist verify owner of reply correctly', async () => {
-         // Arrange 
-         await UsersTableTestHelper.addUser({});
-         await ThreadsTableTestHelper.createThread({});
-         await CommentTableTestHelper.addComment({});
-         await ReplyTableTestHelper.addReply({});
+        // Arrange
+        await UsersTableTestHelper.addUser({});
+        await ThreadsTableTestHelper.createThread({});
+        await CommentTableTestHelper.addComment({});
+        await ReplyTableTestHelper.addReply({});
         const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, {});
-         const payload = {
-           replyId: 'reply-123',
-           commentId: 'comment-123',
-           owner: 'user-123',
-         }
-         // Action and Assert
-        expect(replyRepositoryPostgres.verifyOwnerReply(payload)).resolves.toBeCalled;
-      })
-    })
+        const spyVerifyOwnerReply = jest.spyOn(replyRepositoryPostgres, 'verifyOwnerReply');
+        const payload = {
+          replyId: 'reply-123',
+          commentId: 'comment-123',
+          owner: 'user-123',
+        };
+        // Action
+        await replyRepositoryPostgres.verifyOwnerReply(payload);
+        // Assert
+        expect(spyVerifyOwnerReply).toBeCalledWith(payload);
+        expect(spyVerifyOwnerReply).toBeCalledTimes(1);
+      });
+    });
 
     describe('getReplyByCommentId function', () => {
       it('should persist get reply correctly', async () => {
@@ -141,9 +147,9 @@ describe('ReplyRepositoryPostgres', () => {
         const replies = await replyRepositoryPostgres.getReplyByCommentId('comment-123');
 
         // Assert
-        expect({...replies[0]}).toStrictEqual({
+        expect({ ...replies[0] }).toStrictEqual({
           id: 'reply-123',
-          content: '**balasan telah dihapus**',
+          content: DetailReply.DELETED_REPLY_CONTENT,
           username: 'dicoding',
           date,
         });
@@ -155,17 +161,17 @@ describe('ReplyRepositoryPostgres', () => {
       const payload = [
         {
           date: '27/09/2000',
-        }, 
+        },
         {
           date: '28/09/2000',
-        }
+        },
       ];
 
       const replyRepositoryPostgres = new ReplyRepositoryPostgres({}, {});
       // Action
-      const result = replyRepositoryPostgres._sortReplyByAscending(payload)
-       // Assert
+      const result = replyRepositoryPostgres._sortReplyByAscending(payload);
+      // Assert
       expect(result[0].date).toEqual('27/09/2000');
-    })
+    });
   });
 });
