@@ -497,7 +497,7 @@ describe('HTTP server', () => {
       expect(responseJson.status).toEqual('success');
     });
   });
-
+  
   describe('when GET /', () => {
     it('should return 200 and hello world', async () => {
       // Arrange
